@@ -10,8 +10,11 @@ namespace AsyncTest {
       Console.WriteLine("Thread.CurrentThread.ManagedThreadId(main-enter): {0}", Thread.CurrentThread.ManagedThreadId);
       var task = Execute();
       Console.WriteLine("Thread.CurrentThread.ManagedThreadId(main-post1): {0}", Thread.CurrentThread.ManagedThreadId);
+
       task
         .ContinueWith(t => {
+          if (t.IsFaulted)
+            Console.WriteLine("FAULTED!!!");
           Console.WriteLine("Thread.CurrentThread.ManagedThreadId(done): {0}", Thread.CurrentThread.ManagedThreadId);
           Console.WriteLine("t.Result: {0}", t.Result);
         })
@@ -21,7 +24,7 @@ namespace AsyncTest {
 
     private static async Task<string> Execute() {
       var client = new WebClient();
-      return await client.DownloadStringTaskAsync("http://www.google.com");
+      return await client.DownloadStringTaskAsync((string)null);//"http://www.google.comasdf");
     }
 
     //private static async Task Execute() {

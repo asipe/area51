@@ -16,10 +16,16 @@ namespace multizip {
     private static void Execute(string[] args) {
       _Root = args[0];
       Console.WriteLine("path: {0}", _Root);
+
       var runnerCount = int.Parse(args[1]);
       Console.WriteLine("runnerCount: {0}", runnerCount);
+
       var runnerType = args[2];
       Console.WriteLine("runnerType: {0}", runnerType);
+
+      var zips = Directory.GetFiles(_Root, "*.zip");
+      Array.ForEach(zips, File.Delete);
+      Console.WriteLine("existing zips deleted");
 
       var sw = Stopwatch.StartNew();
 
@@ -27,16 +33,19 @@ namespace multizip {
         .GetDirectories(_Root)
         .Select(dir => new Item {
                                   Source = dir,
-                                  Dest = Path.Combine(_Root, dir.Replace(_Root, "") + ".zip")
+                                  Dest = Path.Combine(_Root, dir) + ".zip"
                                 })
         .ToArray();
 
       switch (runnerType) {
+        case "taskfile":
+          new TaskFileZip().Execute(items, runnerCount);
+          break;
         case "file":
-          new FileZip().Exeucte(items, runnerCount);
+          new FileZip().Execute(items, runnerCount);
           break;
         case "memory":
-          new MemoryZip().Exeucte(items, runnerCount);
+          new MemoryZip().Execute(items, runnerCount);
           break;
         default:
           throw new Exception("Unknown type");

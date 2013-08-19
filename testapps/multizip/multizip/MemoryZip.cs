@@ -8,7 +8,7 @@ using Snarfz.Core;
 
 namespace multizip {
   public class MemoryZip {
-    public void Exeucte(Item[] items, int runnerCount) {
+    public void Execute(Item[] items, int runnerCount) {
       mItems = new Queue<Item>(items);
       var threads = Enumerable
         .Range(0, runnerCount)
@@ -22,9 +22,6 @@ namespace multizip {
     private void CompressUsingMemory() {
       var item = GetNextItem();
       while (item != null) {
-        if (File.Exists(item.Dest))
-          File.Delete(item.Dest);
-
         using (var strm = new MemoryStream()) {
           using (var archive = new ZipArchive(strm, ZipArchiveMode.Create, true)) {
             var cfg = new Config(item.Source) {ScanType = ScanType.FilesOnly};
